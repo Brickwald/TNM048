@@ -15,23 +15,24 @@ function kmeans(data, k) {
 	
 	var keys = Object.keys(data[0]); //datans dimensioner
 	
+	
 		
 	//Randomly place K number of centroids
-	  var clusters = [], indices = [], assignments = [];
+	  var clusters = [], assignments = [];
 	  for (var i = 0; i < k; ++i) {
-		var pos = Math.random(0, data.length);
-		
+		//var pos = Math.random(0, data.length);
+		var pos = Math.floor((Math.random() * data.length));
 		var clone = Object.assign({}, data[pos]);
 		clusters.push(clone);
 		
 	  }
 	  
-	  indices.push(pos);
+	 
 	  
-
+	var datError = 1;
 		  
 		
-	while(newError < oldError)
+	while(datError > 0.01)
 	{
 		  oldError = newError;
 		  
@@ -48,9 +49,12 @@ function kmeans(data, k) {
 						if (dist < nearestValue) 
 						{
 							nearestValue = dist;
-							nearestIndex = i;
+							nearestIndex = j;
+							console.log("nearest= " + nearestValue + " dist= " +dist + " j= " + j + " nearetIndex= "+ nearestIndex); 
 						}
+						//console.log("nearest= " + nearestIndex + " j= " +j); 
 					}
+					
 					assignments[i] = nearestIndex;
 				}
 
@@ -62,25 +66,34 @@ function kmeans(data, k) {
 			  for(var i=0; i<k;i++) //varje kluster
 			  {
 				  dimMedel = 0;
-				  
+				  var counter = 0;
 				  for(var dim=0;dim<keys.length ;dim++)//varje dimension
 				  {
 					  for(var j=0;j<data.length; j++) //varje data entry
 					  {
-						  if(assignments[i] == dim)
-							dimMedel += data[j][dim];
+					
+						  if(assignments[j] == i)
+						  {
+							dimMedel += parseFloat(d3.values(data[j])[dim]);
+							counter++;
+						  }
 					  }
-					 dimMedel = dimMedel/keys.length; //medelvärdet för varje dimension
+					  
+					  //console.log("counter" + counter); 
+		  
+					 dimMedel = dimMedel/counter; //medelvärdet för varje dimension
+					 
 					 
 					 clusters[i][dim] = dimMedel; //assign new centroid
-				  }				
+					 
+					 //console.log(typeof clusters[i][dim]);
+				  }
+				  counter = 0;
+				  
 			  }	
 			  
-
+				//console.log("cluster= " + clusters[1][1]); 
 		  
-		  
-		  
-			
 			
 			var totalError = 0;
 		  
@@ -88,23 +101,15 @@ function kmeans(data, k) {
 			{
 				  
 				  var clusterError = 0;
-				  var dimError;
 				  
-				  for(var dim=0;dim < keys.length ;dim++)//varje dimension
-				  {
-					  
-					  dimError = 0;
-
 					  for(var j=0;j<data.length; j++) //varje data entry
 					  {
-						  
-						  dimError += squaredDiffSum(data[j],clusters[i][dim]);
-						  //console.log("dimError= " + dimError[dim]);
+						  if(assignments[j] == i)
+							clusterError += squaredDiffSum(data[j],clusters[i]);
+						  //console.log("dimerroe= "+ dimError);
 					  }
 					
-					clusterError += dimError;
-					console.log("clusterError= " + clusterError);
-				  }
+					//console.log("clusterError= " + clusterError)
 				  
 				totalError += clusterError;  
 				
@@ -113,8 +118,11 @@ function kmeans(data, k) {
 		
 
 		var newError = totalError;
-		console.log("newError= " + newError);
-		console.log("oldError= " + oldError);
+		//console.log("newError= " + newError);
+		//console.log("oldError= " + oldError);
+		
+		datError = oldError - newError;
+		console.log("datError= " + datError);
 	}
 		
 		

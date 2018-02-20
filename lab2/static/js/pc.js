@@ -42,6 +42,7 @@ function pc(data1,data2,data3){
 
    var k = 4;
    var kmeansRes = kmeans(data,k);
+   console.log("kmeansRes= " + kmeansRes); 
 
    draw(kmeansRes);
 

@@ -22,6 +22,7 @@ function kmeans(data, k) {
 	  for (var i = 0; i < k; ++i) {
 		//var pos = Math.random(0, data.length);
 		var pos = Math.floor((Math.random() * data.length));
+		
 		var clone = Object.assign({}, data[pos]);
 		clusters.push(clone);
 		
@@ -32,7 +33,7 @@ function kmeans(data, k) {
 	var datError = 1;
 		  
 		
-	while(datError > 0.01)
+	while(datError > 0.0001) //daterror blir negativ ibland
 	{
 		  oldError = newError;
 		  
@@ -50,7 +51,7 @@ function kmeans(data, k) {
 						{
 							nearestValue = dist;
 							nearestIndex = j;
-							console.log("nearest= " + nearestValue + " dist= " +dist + " j= " + j + " nearetIndex= "+ nearestIndex); 
+							//console.log("nearest= " + nearestValue + " dist= " +dist + " j= " + j + " nearetIndex= "+ nearestIndex); 
 						}
 						//console.log("nearest= " + nearestIndex + " j= " +j); 
 					}
@@ -137,8 +138,8 @@ function squaredDiffSum(a, b) {
 	  var num = Math.max(valA.length, valB.length),
 	      tot = 0;
 	  for (var i = 0; i < num; ++i) {
-	    var p = parseFloat(valA[i]) || 0,
-	        q = parseFloat(valB[i]) || 0;
+	    var p = parseFloat(valA[i]),
+	        q = parseFloat(valB[i]);
 	    tot += Math.pow(p - q, 2);
 	  }
 	  return tot;

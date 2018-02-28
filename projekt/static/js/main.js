@@ -7,5 +7,5 @@ var sp, pc, map;
 function draw(error, data){
   if (error) throw error;
 
-	pc = new pc(data);
+	pc = new graf(data);
 }

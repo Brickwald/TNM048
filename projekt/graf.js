@@ -109,7 +109,5 @@ function graf(data){
 		
 	}
 
-
-         
-
 }//End
+

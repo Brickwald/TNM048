@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="./static/lib/css//bootstrap.min.css">
   <link rel="stylesheet" href="./static/lib/css/keen-dashboards.css">
   <link rel="stylesheet" href="./static/css/main.css">
+  <link rel="stylesheet" href="./scrollist.css">
 
 </head>
 <body class="application">
@@ -27,9 +28,9 @@
       </div>
     </div>
   </div>
-
+  
   <div class="container-fluid">
-
+  
       <!-- Graf -->
       <div class="row">
           <div class="col-sm-12">
@@ -45,6 +46,9 @@
       </div>
 
     </div> <!-- contriner -->
+  		<ul id="listan" style="list-style-type:none">
+			<input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
+		</ul>
 
 
   <script src="./static/lib/js/jquery.min.js"></script>

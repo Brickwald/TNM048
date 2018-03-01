@@ -1,5 +1,5 @@
 queue()
-  .defer(d3.csv,'Given_Newborn_Name_by_Year.csv')
+  .defer(d3.csv,'testdata.csv')
   .await(draw);
 
 var sp, pc, map, theList, selected = [];
@@ -56,9 +56,9 @@ document.getElementById('listan').addEventListener('click',function(ev){
 	{
 		if(ev.target.innerText == children[i].innerText)
 		{
-			
+			pc.selectLine(i,ev.target.innerText);
 		}
-			console.log(i);
+			//console.log(i);
 	}
 
 	if(ev.target.tagName == 'LI')

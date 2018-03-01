@@ -15,7 +15,8 @@ function graf(data){
 	
 	var keys = Object.keys(data[0]); //datans dimensioner
 
-	console.log(d3.values(data[5])[5]);
+	console.log(d3.values(data[3])[0]);
+	
 
     var height = 500;
     var parentWidth = $(div).parent().width();
@@ -51,11 +52,15 @@ function graf(data){
 	svg.append("g").attr("transform","translate(0" + "," + height+ ")").call(x_axis);
 	svg.append("g").call(y_axis);
 	
-	var colors = [];
 	
-	for(var j = 1;j<data.length; j++)
+	var colors = [];
+	var selected = [];
+	
+	for(var j = 0;j<data.length; j++)
 	{
 		colors[j] = rndColor();
+		selected[j] = true;
+		
 		
 		var data2 = [{"value": d3.values(data[j])[1],
 					   "year": 1998},
@@ -96,18 +101,52 @@ function graf(data){
 		return xScale(d.year); }) // set the x values for the line generators
     .y(function(d) {//console.log((d.value));	
 		return (yScale(d.value)); }) // set the y values for the line generator 
-    .curve(d3.curveLinear) // apply smoothing to the line
+    .curve(d3.curveLinear); // apply smoothing to the line
 	
 	// 9. Append the path, bind the data, and call the line generator 
-	svg.append("path")
+	var thePath = svg.append("path")
     .datum(data2) // 10. Binds data to the line 
     .attr("class", "line")
 		// Assign a class for styling 
     .attr("d", line)
+	.attr("id", d3.values(data[j])[0])
 	.style("stroke", colors[j])
 	.style("fill","none"); // 11. Calls the line generator 
 		
+		//console.log(d3.values(data[j])[0]);
 	}
+	
+	
+	this.selectLine = function(index,name)
+	{
+		console.log("Select line, index= " + index + " name= " + name);
+	
+		if(selected[index] == false)
+		{
+			selected[index] = true;
+		}
+		else
+		{
+			selected[index] = false;
+		}
+		console.log(selected.length);
+		
+		for(var k=0;k<selected.length;k++)
+		{
+			var currID = "#" + d3.values(data[k])[0];
+			
+			console.log("currID = " + currID);
+			
+			if(selected[k] == true)
+			{
+				d3.select(currID).style("opacity", 1);
+			}
+			else
+				d3.select(currID).style("opacity", 0);
+		}
+		
+		
+	};
 
 }//End
 

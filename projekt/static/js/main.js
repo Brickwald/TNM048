@@ -110,7 +110,7 @@ function girlNames()
 {	
 	pc.removeLines();
 	
-	for(var i=0; i<155; i++)
+	for(var i=0; i<girlnames.length; i++)
 	{
 		pc.selectLine(i);
 	}	

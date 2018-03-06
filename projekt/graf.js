@@ -31,6 +31,11 @@ function graf(data){
         .attr("transform","translate(" + margin.left + "," + margin.top + ")");
 
 		
+		  var tooltip = d3.select(div).append("div")
+       .attr("class", "tooltip")
+       .style("opacity", 0);
+
+		
 	// 5. X scale will use the index of our data
 	var xScale = d3.scaleLinear()
 		.domain([1998, 2013]) // input
@@ -55,6 +60,7 @@ function graf(data){
 	
 	var colors = [];
 	var selected = [];
+	var paths = [];
 	
 	for(var j = 0;j<data.length; j++)
 	{
@@ -62,7 +68,7 @@ function graf(data){
 		selected[j] = true;
 		
 		
-		var data2 = [{"value": d3.values(data[j])[1],
+		var data2 = [ {"value": d3.values(data[j])[1],
 					   "year": 1998},
 					   {"value": d3.values(data[j])[2],
 					   "year": 1999},
@@ -95,31 +101,60 @@ function graf(data){
 					   {"value": d3.values(data[j])[16],
 					   "year": 2013},
 					   ];
-					   
+			
+	//create line
 	var line = d3.line()
     .x(function(d) { //console.log(d.year);
-		return xScale(d.year); }) // set the x values for the line generators
+		return xScale(d.year); }) 
     .y(function(d) {//console.log((d.value));	
-		return (yScale(d.value)); }) // set the y values for the line generator 
-    .curve(d3.curveLinear); // apply smoothing to the line
+		return (yScale(d.value)); }) 
+    .curve(d3.curveLinear); 
 	
-	// 9. Append the path, bind the data, and call the line generator 
+	//create path
 	var thePath = svg.append("path")
-    .datum(data2) // 10. Binds data to the line 
+    .datum(data2) 
     .attr("class", "line")
-		// Assign a class for styling 
     .attr("d", line)
 	.attr("id", d3.values(data[j])[0])
 	.style("stroke", colors[j])
-	.style("fill","none"); // 11. Calls the line generator 
-		
-		//console.log(d3.values(data[j])[0]);
+	.style("fill","none");		
+	//console.log(d3.values(data[j])[0]);
+	
+	paths[j] = thePath;
 	}
+
+	    var projection = svg.selectAll(".line")
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout);
+		
+		
+		function mouseover(d) 
+		{
+		console.log(paths.indexOf(d));
+
+		  //Only show then active..
+		  tooltip.transition().duration(100).style("opacity", .9);
+		  var mouse = d3.mouse(svg.node()).map( function(d) { return parseInt(d); } );
+		  tooltip.attr(
+			"style",
+			"left:"+(mouse[0]+30)+
+			"px;top:"+(mouse[1]+40)+"px")
+			.html(d.name);
+			
+			//console.log(d.name);
+		}
+		
+		function mouseout(d) 
+		{
+		  tooltip.transition()
+			  .duration(100)
+			  .style("opacity", 0);
+		}
 	
 	
-	this.selectLine = function(index,name)
+	this.selectLine = function(index)
 	{
-		console.log("Select line, index= " + index + " name= " + name);
+		//console.log("Select line, index= " + index);
 	
 		if(selected[index] == false)
 		{
@@ -135,7 +170,7 @@ function graf(data){
 		{
 			var currID = "#" + d3.values(data[k])[0];
 			
-			console.log("currID = " + currID);
+			//console.log("currID = " + currID);
 			
 			if(selected[k] == true)
 			{
@@ -146,6 +181,23 @@ function graf(data){
 		}
 		
 		
+	};
+
+	this.removeLines = function()
+	{
+		for(var i=0;i<selected.length;i++)
+		{
+			selected[i] = false;
+			
+			var currID = "#" + d3.values(data[i])[0];
+			
+			d3.select(currID).style("opacity", 0);
+		}
+	};
+	
+	this.getColors = function(i){
+		//console.log(colors[i].toString());
+		return colors[i].toString();
 	};
 
 }//End

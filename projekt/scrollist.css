@@ -35,3 +35,9 @@ li a:hover {background-color: #ddd}
 
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
 show {display:block;} 
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+   align-items: flex-start;
+}

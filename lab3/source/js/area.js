@@ -17,7 +17,7 @@ function area(data) {
 
 
   //Create variable for parsing the time axis
-	var parseDate = d3.timeParse("%b %Y");
+	var parseDate = d3.timeParse("%Y-%m-%dT%H:%M:%S.%LZ");
 	
   //Create scales for the axis x,x2, y,y2
     var x = d3.scaleTime().range([0, width]),
@@ -32,29 +32,37 @@ function area(data) {
 	yAxis2 = d3.axisLeft(y2);
 	
   //Assigns the brush to the small chart's x axis
-	var theBrush = d3.brushX()
+	var brush = d3.brushX()
     .extent([[0, 0], [width, height2]])
     .on("brush end", brush);
   
+  var zoom = d3.zoom()
+    .scaleExtent([1, Infinity])
+    .translateExtent([[0, 0], [width, height]])
+    .extent([[0, 0], [width, height]])
+    .on("zoom", zoomed);
+
   //Creates the big chart
   var area = d3.area()
     .curve(d3.curveMonotoneX)
-    .x(function(d) { return x(d.time); })
+    .x(function(d) {
+					return x(parseDate(d.time)); })
     .y0(height)
-    .y1(function(d) { return y(d.mag); });
+    .y1(function(d) { return y(parseFloat(d.mag)); });
 
   //Creates the small chart
   var area2 = d3.area()
     .curve(d3.curveMonotoneX)
-    .x(function(d) { return x2(d.time); })
+    .x(function(d) { return x2(parseDate(d.time)); })
     .y0(height2)
-    .y1(function(d) { return y2(d.mag); });
+    .y1(function(d) { return y2(parseFloat(d.mag)); });
 
   //Assings the svg canvas to the area div
   var svg = d3.select("div").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 
+		
   //Defines clip region
      svg.append("defs").append("clipPath")
     .attr("id", "clip")
@@ -114,19 +122,27 @@ function area(data) {
       .call(brush)
         .selectAll("rect")
         .attr("height", height2 + 7);
-
-
+		
 
 //Method for brushing
 function brush() {
   var s = d3.event.selection || x.range();
+  //console.log(s[0]); 
   x.domain(s.map(x2.invert, x2));
   focus.select(".area").attr("d", area);
   focus.select(".axis--x").call(xAxis);
-
   //Call the filterTime function in map
-   map.filterTime(brush.extent());
+   map1.filterTime(x.domain());
 
+}
+
+function zoomed() {
+  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+  var t = d3.event.transform;
+  x.domain(t.rescaleX(x2).domain());
+  focus.select(".area").attr("d", area);
+  focus.select(".axis--x").call(xAxis);
+  context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
 }
 
 }

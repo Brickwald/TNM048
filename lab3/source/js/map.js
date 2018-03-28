@@ -59,6 +59,17 @@ function map(data, world_map_json){
 
   function draw(countries){
     //Add code here.
+	countries.enter().insert("path")
+					.attr("class","country")
+					.attr("d",path)
+				    .attr("id", function(d) { 
+						//console.log("id" + typeof(d.id));
+						return d.id; })
+					.attr("title", function(d) {
+						//console.log(d.properties.name);
+						return d.properties.name; })
+					.style("fill", "lightgray");
+
   }
 
   //Formats the data in a feature collection
@@ -70,6 +81,14 @@ function map(data, world_map_json){
             //Create five variables called :
             //id,type,geometry,mag and place and assign the corresponding value to is
             //geometry is an object and has two other attributes called coordinates and type.
+			type: 'Feature',
+			geometry: {
+				type: 'Point',
+				coordinates: [d.lon, d.lat]
+			},
+			id: [d.id],
+			mag: [d.mag],
+			place: [d.name],
           });
       });
       return data;
@@ -104,6 +123,7 @@ function map(data, world_map_json){
   //Calls the filtering function
   d3.select("#slider").on("input", function () {
       //Call filterMag function here with this.value and data
+	  filterMag(this.value);
   });
 
 
@@ -121,14 +141,15 @@ function map(data, world_map_json){
               .style("visibility", function (d) {
                 //show if mag > curr_mag && tmpT between timeExt
                   var tmpT = format(d.time);
-                  /*if ()
+                  if (d.mag > curr_mag &&  timeExt[0] < tmpT && timeExt[1] > tmpT )
                   {
                       //push to filterdData
+					  filterdData.push(d);
                       return "visible";
                   }
                   else
                       return "hidden";
-                */
+                
               });
 
   }
@@ -143,14 +164,16 @@ function map(data, world_map_json){
               .style("visibility", function (d) {
                   //push d to filterData only if mag is > curr_mag and tmpT is between timeExt
                     var tmpT = format(d.time);
-                  /*if ()
+			
+                  if (d.mag > curr_mag &&  timeExt[0] < tmpT && timeExt[1] > tmpT )
                   {
                       //filterData here
+					  filterdData.push(d);
                       return "visible";
                   }
                   else
                       return "hidden";
-                */
+                
               });
 
   };
@@ -159,20 +182,20 @@ function map(data, world_map_json){
   //Calls k-means function and changes the color of the points
   this.cluster = function () {
       //Get the value from the input form in index
-      //var k =
+      var k = document.getElementById("k").value;
 
       //Call the kmeansRes on the filterdData with k clusters.
-      //var kmeansRes =
+      var kmeansRes = kmeans(filterdData,k);
 
       d3.selectAll(".point").data(data)
           //Change style fill if id == in filterdData id
               .style("fill", function (d) {
                   for (var j = 0; j < filterdData.length; j++)
                   {
-                      /*if () {
+                      if (d.id == filterdData[j].id) {
                           //return colors for each assignment j
-                          return
-                      }*/
+                          return colors[kmeansRes[j]];
+                      }
                   }
 
               });
